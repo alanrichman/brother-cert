@@ -101,13 +101,13 @@ func (p *printer) SetActiveCert(id int) error {
 
 	// submit initial form to change the cert
 	data := url.Values{}
-	data.Set("pageid", "326")
+	data.Set("pageid", "388") // 326
 	data.Set("CSRFToken", csrfToken)
-	data.Set("B903", strconv.Itoa(id))
+	data.Set("B1b8", strconv.Itoa(id)) // B903
 	// B91d always seems to be 1, but wasn't needed here
 	// Enable HTTPS for WebUI and IPP
-	data.Set("B86c", "1")
-	data.Set("B87e", "1")
+	data.Set("B129", "1") // B86c
+	data.Set("B143", "1") // B87e
 	// there are some other values here but don't set them (which should
 	// leave them as-is in most cases)
 
