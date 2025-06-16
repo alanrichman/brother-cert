@@ -73,31 +73,38 @@ func keyPemToKey(keyPem []byte) (key *rsa.PrivateKey, err error) {
 // rest of the chain is discarded as more than 2 certs are too big to fit
 // on the printer
 func certPemToCerts(certPem []byte) (cert *x509.Certificate, certChain []*x509.Certificate, err error) {
-	// decode 1st cert
-	certPemBlock, rest := pem.Decode(certPem)
-	if certPemBlock == nil {
-		return nil, nil, errors.New("printer: cert pem block did not decode")
+	var certPemBlock *pem.Block
+	var rest []byte
+	certChain = []*x509.Certificate{}
+	for {
+		// Decode current cert
+		certPemBlock, rest = pem.Decode(certPem)
+		if certPemBlock == nil {
+			return nil, nil, errors.New("printer: cert pem block did not decode")
+		}
+
+		x509, err := x509.ParseCertificate(certPemBlock.Bytes)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		// Write cert to output
+		if cert == nil {
+			cert = x509
+		} else {
+			certChain = append(certChain, x509)
+		}
+
+		// Last cert is done
+		if len(rest) == 0 || rest == nil {
+			break
+		}
+
+		// Advance to next cert
+		certPem = rest
 	}
 
-	// parse 1st cert
-	cert, err = x509.ParseCertificate(certPemBlock.Bytes)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// decode 2nd cert
-	cert2PemBlock, _ := pem.Decode(rest)
-	if cert2PemBlock == nil {
-		return nil, nil, errors.New("printer: cert pem block 2 did not decode")
-	}
-
-	// parse 2nd cert
-	cert2, err := x509.ParseCertificate(cert2PemBlock.Bytes)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return cert, []*x509.Certificate{cert2}, nil
+	return cert, certChain, nil
 }
 
 // makeModernPfx returns the pkcs12 pfx data for the given key and cert pem
