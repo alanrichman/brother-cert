@@ -65,6 +65,8 @@ func keyPemToKey(keyPem []byte) (key *rsa.PrivateKey, err error) {
 	return nil, errUnsupportedKey
 }
 
+// TODO: This function needs to be capable of determining the length of the chain (with 0 as an option)
+
 // certPemToCerts returns the certificate from cert pem bytes. if the pem
 // bytes contain more than one certificate, the first is returned as the
 // certificate and the 2nd is returned as the only member of an array. The
@@ -85,8 +87,8 @@ func certPemToCerts(certPem []byte) (cert *x509.Certificate, certChain []*x509.C
 
 	// decode 2nd cert
 	cert2PemBlock, _ := pem.Decode(rest)
-	if certPemBlock == nil {
-		return nil, nil, errors.New("printer: cert pem block did not decode")
+	if cert2PemBlock == nil {
+		return nil, nil, errors.New("printer: cert pem block 2 did not decode")
 	}
 
 	// parse 2nd cert

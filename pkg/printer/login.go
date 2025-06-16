@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const urlLogin = "/general/status.html"
+const urlLogin = "/home/status.html" // TODO: needs to be configurable, original "/general/status.html"
 
 var errLoginNoAuth = errors.New("printer: login: no auth cookie received (wrong password?)")
 
@@ -18,7 +18,7 @@ var errLoginNoAuth = errors.New("printer: login: no auth cookie received (wrong 
 func (p *printer) login(password string) error {
 	// login form values
 	data := url.Values{}
-	data.Set("B8d9", password)
+	data.Set("B191", password) // TODO: needs to configurable, original "B8d9"
 	data.Set("loginurl", urlLogin)
 
 	// get url & set path
